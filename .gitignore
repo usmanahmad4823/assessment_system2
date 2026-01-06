@@ -11,6 +11,7 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+backend/db_connection.php
 
 # IntelliJ related
 *.iml
