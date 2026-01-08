@@ -71,6 +71,12 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
     super.dispose();
   }
 
+  void _handleReload() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('reload button clicked')),
+    );
+  }
+
   Future<void> _submit() async {
     if (selectedStudent == null) {
       setState(() => errorMessage = 'Please select a student');
@@ -125,6 +131,12 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Evaluate: ${widget.assessmentTitle}'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _handleReload,
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
