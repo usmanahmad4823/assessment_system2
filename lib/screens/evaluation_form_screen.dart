@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../model/assessment_detail_model.dart';
-import '../services/api_service.dart';
+import '../model/assessment_detail_model.dart';
+import '../repos/assessment_repository.dart';
+import '../services/sync_service.dart';
 
 class EvaluationFormScreen extends StatefulWidget {
   final int assessmentId;
@@ -23,6 +25,8 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
   final Map<int, TextEditingController> marksControllers = {};
   final Map<int, TextEditingController> commentControllers = {};
   
+  final AssessmentRepository _repository = AssessmentRepository();
+  
   bool isLoading = true;
   bool isSubmitting = false;
   String? errorMessage;
@@ -36,8 +40,9 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
   Future<void> _loadData() async {
     try {
       // Load both students and assessment details
-      final studentsData = await ApiService.getStudents();
-      final detailsData = await ApiService.getAssessmentDetails(widget.assessmentId);
+      // Load both students and assessment details
+      final studentsData = await _repository.getStudents();
+      final detailsData = await _repository.getAssessmentDetails(widget.assessmentId);
 
       setState(() {
         students = studentsData;
@@ -71,10 +76,26 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
     super.dispose();
   }
 
-  void _handleReload() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('reload button clicked')),
-    );
+  Future<void> _handleReload() async {
+    setState(() => isLoading = true);
+    try {
+      final message = await SyncService.syncPendingEvaluations();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+         ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error syncing: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
   }
 
   Future<void> _submit() async {
@@ -87,6 +108,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
       errorMessage = null;
     });
     try {
+      bool savedLocally = false;
       for (var detail in details) {
         final teacherComment = commentControllers[detail.id]?.text ?? '';
         final isCommentOnly = detail.isComment.toLowerCase() == 'yes';
@@ -103,19 +125,27 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
 
         final evaluation = detail.description;
         
-        await ApiService.submitEvaluation(
+        final synced = await _repository.submitEvaluation(
           studentId: selectedStudent!.id,
           assessmentDetailId: detail.id,
           obtainedMarks: obtainedMarks,
           comments: teacherComment,
           evaluation: evaluation,
         );
+        
+        if (!synced) {
+             savedLocally = true;
+        }
       }
       if (mounted) {
+        final msg = savedLocally 
+            ? 'No internet. Saved locally.' 
+            : 'Evaluation submitted successfully!';
+            
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Evaluation submitted successfully!')),
+          SnackBar(content: Text(msg)),
         );
-        Navigator.pop(context);
+        // Navigator.pop(context); // Remain on screen as requested
       }
     } catch (e) {
       setState(() => errorMessage = 'Submission failed: $e');

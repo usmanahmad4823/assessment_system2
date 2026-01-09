@@ -62,10 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Ensure comments and evaluation are always strings
         $comments = strval($comments);
         $evaluation = strval($evaluation);
-        $stmt->bind_param("s ssii", $obtained_marks, $comments, $evaluation, $student_id, $assessment_detail_id);
-        // Correction: should be int, string, string, int, int
-        // But obtained_marks is int, comments is string, evaluation is string, student_id is int, assessment_detail_id is int
-        // So: "issii"
         $stmt->bind_param("issii", $obtained_marks, $comments, $evaluation, $student_id, $assessment_detail_id);
         $update_result = $stmt->execute();
         if ($update_result) {

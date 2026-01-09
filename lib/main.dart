@@ -1,7 +1,11 @@
 import 'package:assessment_system2/screens/assessment_list.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+import 'package:assessment_system2/services/storage_service.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await StorageService.init();
   runApp(const MyApp());
 }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/assessment_model.dart';
-import '../services/api_service.dart';
+import '../repos/assessment_repository.dart';
 import 'evaluation_form_screen.dart';
 
 class AssessmentList extends StatefulWidget {
@@ -12,11 +12,12 @@ class AssessmentList extends StatefulWidget {
 
 class _AssessmentListState extends State<AssessmentList> {
   late Future<List<Assessment>> futureAssessments;
+  final AssessmentRepository _repository = AssessmentRepository();
 
   @override
   void initState() {
     super.initState();
-    futureAssessments = ApiService.getAssessments();
+    futureAssessments = _repository.getAssessments();
   }
 
   // ================= UI =================
