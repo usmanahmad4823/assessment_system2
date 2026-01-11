@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../model/assessment_detail_model.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import '../model/assessment_detail_model.dart';
 import '../repos/assessment_repository.dart';
 import '../services/sync_service.dart';
@@ -20,8 +20,8 @@ class EvaluationFormScreen extends StatefulWidget {
 
 class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
   List<AssessmentDetail> details = [];
-  List<Student> students = [];
-  Student? selectedStudent;
+  List<dynamic> students = [];
+  dynamic selectedStudent;
   final Map<int, TextEditingController> marksControllers = {};
   final Map<int, TextEditingController> commentControllers = {};
   
@@ -39,10 +39,17 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
 
   Future<void> _loadData() async {
     try {
-      // Load both students and assessment details
-      // Load both students and assessment details
       final studentsData = await _repository.getStudents();
       final detailsData = await _repository.getAssessmentDetails(widget.assessmentId);
+
+      // Assign manual IDs (1, 2, 3...)
+      for (var i = 0; i < studentsData.length; i++) {
+        studentsData[i]['manual_id'] = i + 1;
+        // Fallback for legacy cache having 'name' but not 'user_full_name'
+        if (studentsData[i]['user_full_name'] == null) {
+           studentsData[i]['user_full_name'] = studentsData[i]['name'];
+        }
+      }
 
       setState(() {
         students = studentsData;
@@ -113,7 +120,6 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
         final teacherComment = commentControllers[detail.id]?.text ?? '';
         final isCommentOnly = detail.isComment.toLowerCase() == 'yes';
         
-        // Critical: Set marks to 0 if teacher's comment is "yes" (case-insensitive)
         int obtainedMarks;
         if (teacherComment.trim().toLowerCase() == 'yes') {
           obtainedMarks = 0;
@@ -125,8 +131,11 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
 
         final evaluation = detail.description;
         
+        final studentName = selectedStudent['user_full_name']?.toString() ?? selectedStudent['name']?.toString() ?? 'Unknown';
+        
         final synced = await _repository.submitEvaluation(
-          studentId: selectedStudent!.id,
+          studentId: selectedStudent['manual_id'], // Pass the manual ID as requested
+          studentName: studentName,
           assessmentDetailId: detail.id,
           obtainedMarks: obtainedMarks,
           comments: teacherComment,
@@ -145,7 +154,6 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg)),
         );
-        // Navigator.pop(context); // Remain on screen as requested
       }
     } catch (e) {
       setState(() => errorMessage = 'Submission failed: $e');
@@ -177,20 +185,72 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      DropdownButtonFormField<Student>(
-                        value: selectedStudent,
-                        dropdownColor: Colors.grey[900],
-                        items: students
-                            .map((s) => DropdownMenuItem(
-                                  value: s,
-                                  child: Text('${s.rollno} - ${s.name}', style: const TextStyle(color: Colors.white)),
-                                ))
-                            .toList(),
-                        onChanged: (s) => setState(() => selectedStudent = s),
-                        decoration: const InputDecoration(
-                          labelText: 'Select Student (Roll No)',
+                       DropdownSearch<dynamic>(
+                        items: students,
+                        itemAsString: (item) {
+                          final name = item['user_full_name']?.toString() ?? item['name']?.toString() ?? 'Unknown';
+                          return '${item['manual_id']} - $name';
+                        },
+                        selectedItem: selectedStudent,
+                        popupProps: PopupProps.menu(
+                          showSearchBox: true,
+                          menuProps: MenuProps(
+                            backgroundColor: Colors.grey[850],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          searchFieldProps: const TextFieldProps(
+                            style: TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'Search student',
+                              labelStyle: TextStyle(color: Colors.white70),
+                              prefixIcon: Icon(Icons.search, color: Colors.white70),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white24),
+                              ),
+                            ),
+                          ),
+                          itemBuilder: (context, item, isSelected) {
+                            final name = item['user_full_name']?.toString() ?? item['name']?.toString() ?? 'Unknown';
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              child: Text(
+                                '${item['manual_id']} - $name',
+                                style: TextStyle(
+                                  color: isSelected ? Colors.blue : Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            );
+                          },
+                          scrollbarProps: const ScrollbarProps(thickness: 0),
                         ),
+                        dropdownDecoratorProps: const DropDownDecoratorProps(
+                          dropdownSearchDecoration: InputDecoration(
+                            labelText: 'Select Student',
+                            labelStyle: TextStyle(color: Colors.white70),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(12)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white24),
+                              borderRadius: BorderRadius.all(Radius.circular(12)),
+                            ),
+                          ),
+                        ),
+                        dropdownBuilder: (context, selectedItem) {
+                          if (selectedItem == null) {
+                            return const Text('Select Student', style: TextStyle(color: Colors.white54));
+                          }
+                          final name = selectedItem['user_full_name']?.toString() ?? selectedItem['name']?.toString() ?? 'Unknown';
+                          return Text(
+                            '${selectedItem['manual_id']} - $name',
+                            style: const TextStyle(color: Colors.white, fontSize: 16),
+                          );
+                        },
+                        onChanged: (value) => setState(() => selectedStudent = value),
                       ),
+
                       const SizedBox(height: 24),
                       ...details.map((detail) {
                         final isCommentOnly = detail.isComment.toLowerCase() == 'yes';

@@ -16,6 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// DEBUG LOGGING
+function log_debug($msg) {
+    $date = date('Y-m-d H:i:s');
+    file_put_contents('debug_log.txt', "[$date] $msg\n", FILE_APPEND);
+}
+
+
 // ================= INCLUDE DB CONNECTION =================
 require_once "db_connection.php";
 
@@ -27,12 +34,16 @@ $response = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     // Get JSON data
-    $data = json_decode(file_get_contents("php://input"), true);
+    $input_json = file_get_contents("php://input");
+    $data = json_decode($input_json, true);
+    log_debug("Received payload: " . $input_json);
 
     // Validate required fields
     if (!isset($data['student_id']) || !isset($data['assessment_detail_id']) || !isset($data['obtained_marks'])) {
         $response["message"] = "Missing required fields";
+        log_debug("Error: Missing required fields");
         echo json_encode($response);
         exit;
     }
@@ -42,6 +53,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $obtained_marks = intval($data['obtained_marks']);
     $comments = isset($data['comments']) ? $data['comments'] : '';
     $evaluation = isset($data['evaluation']) ? $data['evaluation'] : '';
+    $student_name = isset($data['student_name']) ? $data['student_name'] : 'Unknown Student';
+
+    log_debug("Processing Student ID: $student_id (Name: $student_name), Detail ID: $assessment_detail_id");
+
+    // 1. Check if student exists
+    $check_student_sql = "SELECT id FROM student WHERE id = ?";
+    $stmt_s_check = $conn->prepare($check_student_sql);
+    $stmt_s_check->bind_param("i", $student_id);
+    $stmt_s_check->execute();
+    $res_s_check = $stmt_s_check->get_result();
+    
+    // 2. If student does not exist, insert them manually
+    if ($res_s_check->num_rows == 0) {
+        log_debug("Student $student_id not found. creating...");
+        $rollno = "MAN-" . $student_id; // Generate a unique rollno
+        $insert_student_sql = "INSERT INTO student (id, name, rollno) VALUES (?, ?, ?)";
+        $stmt_s_insert = $conn->prepare($insert_student_sql);
+        $stmt_s_insert->bind_param("iss", $student_id, $student_name, $rollno);
+        if (!$stmt_s_insert->execute()) {
+             $error = $stmt_s_insert->error;
+             $response["message"] = "Failed to create student dependency: " . $error;
+             log_debug("Error creating student: $error");
+             echo json_encode($response);
+             exit;
+        }
+        $stmt_s_insert->close();
+        log_debug("Student created successfully.");
+    } else {
+        log_debug("Student $student_id already exists.");
+    }
+    $stmt_s_check->close();
 
     // Check if record already exists
     $check_sql = "SELECT id FROM student_assessment_detail WHERE student_id = ? AND assessment_detail_id = ?";
@@ -52,10 +94,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($result_check->num_rows > 0) {
         // Update existing record
+        log_debug("Updating existing evaluation.");
         $sql = "UPDATE student_assessment_detail SET obtained_marks = ?, comments = ?, evaluation = ? WHERE student_id = ? AND assessment_detail_id = ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             $response["message"] = "Prepare failed: " . $conn->error;
+            log_debug("Prepare failed: " . $conn->error);
             echo json_encode($response);
             exit;
         }
@@ -67,17 +111,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($update_result) {
             $response["success"] = true;
             $response["message"] = "Evaluation updated successfully";
+            log_debug("Update success.");
         } else {
             $response["message"] = "Update failed: " . $stmt->error;
+            log_debug("Update failed: " . $stmt->error);
         }
         $stmt->close();
 
     } else {
         // Insert new record
+        log_debug("Inserting new evaluation.");
         $sql = "INSERT INTO student_assessment_detail (student_id, assessment_detail_id, obtained_marks, comments, evaluation) VALUES (?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             $response["message"] = "Prepare failed: " . $conn->error;
+            log_debug("Prepare failed: " . $conn->error);
             echo json_encode($response);
             exit;
         }
@@ -91,8 +139,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $response["success"] = true;
             $response["data"]["id"] = $conn->insert_id;
             $response["message"] = "Evaluation saved successfully";
+            log_debug("Insert success. ID: " . $conn->insert_id);
         } else {
             $response["message"] = "Insert failed: " . $stmt->error;
+            log_debug("Insert failed: " . $stmt->error);
         }
         $stmt->close();
     }

@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../model/assessment_model.dart';
 import '../model/assessment_detail_model.dart';
+import '../model/student_model.dart';
 
 class ApiService {
   // Change this to your backend URL
@@ -60,38 +61,38 @@ class ApiService {
   }
 
   // Get all students
-  static Future<List<Student>> getStudents() async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/getStudents.php'),
-      );
+  // Get all students
+  static Future<List<dynamic>> getStudents() async {
+  try {
+    final response = await http.get(
+      Uri.parse('https://bgnu.space/api/student_data'),
+    );
 
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        
-        if (json['success'] == true) {
-          List<Student> students = (json['data'] as List)
-              .map((item) => Student.fromJson(item))
-              .toList();
-          return students;
-        } else {
-          throw Exception(json['message'] ?? 'Failed to load students');
-        }
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+
+      // ✅ FIX: use "status" instead of "success"
+      if (decoded['status'] == true) {
+        return decoded['data'] as List<dynamic>;
       } else {
-        throw Exception('Server error: ${response.statusCode}');
+        throw Exception('API returned status false');
       }
-    } catch (e) {
-      throw Exception('Error: $e');
+    } else {
+      throw Exception('Server error: ${response.statusCode}');
     }
+  } catch (e) {
+    throw Exception('Failed to load students: $e');
   }
+}
 
   // Submit evaluation
   static Future<bool> submitEvaluation({
-    required int studentId,
+    required dynamic studentId,
     required int assessmentDetailId,
     required int obtainedMarks,
     String comments = '',
     String evaluation = '',
+    required String studentName,
   }) async {
     try {
       final response = await http.post(
@@ -99,6 +100,7 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'student_id': studentId,
+          'student_name': studentName,
           'assessment_detail_id': assessmentDetailId,
           'obtained_marks': obtainedMarks,
           'comments': comments,

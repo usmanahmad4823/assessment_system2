@@ -1,4 +1,5 @@
-import 'package:assessment_system2/screens/assessment_list.dart';
+// import 'package:assessment_system2/screens/assessment_list.dart';
+import 'package:assessment_system2/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:assessment_system2/services/storage_service.dart';
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
         ),
         progressIndicatorTheme: const ProgressIndicatorThemeData(color: Colors.white),
       ),
-      home: const AssessmentList(),
+      home: const LoginScreen(),
     );
   }
 }

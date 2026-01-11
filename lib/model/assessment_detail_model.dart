@@ -34,33 +34,3 @@ class AssessmentDetail {
   }
 }
 
-class Student {
-  final int id;
-  final String name;
-  final String rollno;
-
-  Student({
-    required this.id,
-    required this.name,
-    required this.rollno,
-  });
-
-  factory Student.fromJson(Map<String, dynamic> json) {
-    return Student(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      rollno: json['rollno'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'rollno': rollno,
-    };
-  }
-
-  @override
-  String toString() => rollno;
-}

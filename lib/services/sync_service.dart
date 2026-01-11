@@ -37,6 +37,7 @@ class SyncService {
       try {
         final success = await ApiService.submitEvaluation(
           studentId: data['student_id'],
+          studentName: data['student_name'] ?? 'Unknown',
           assessmentDetailId: data['assessment_detail_id'],
           obtainedMarks: data['obtained_marks'],
           comments: data['comments'],

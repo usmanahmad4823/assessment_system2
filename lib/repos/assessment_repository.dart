@@ -3,18 +3,16 @@ import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../model/assessment_model.dart';
 import '../model/assessment_detail_model.dart';
+import '../model/student_model.dart';
 
 class AssessmentRepository {
   
   // Check connectivity helper
   Future<bool> get isOnline async {
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile ||
+    return connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi ||
-        connectivityResult == ConnectivityResult.ethernet) {
-      return true;
-    }
-    return false;
+        connectivityResult == ConnectivityResult.ethernet;
   }
 
   // Get Assessments
@@ -40,23 +38,18 @@ class AssessmentRepository {
   }
 
   // Get Students
-  Future<List<Student>> getStudents() async {
-    if (await isOnline) {
-      try {
-        final students = await ApiService.getStudents();
-        await StorageService.saveStudents(students.map((e) => e.toJson()).toList());
-        return students;
-      } catch (e) {
-        return _getLocalStudents();
-      }
-    } else {
+  Future<List<dynamic>> getStudents() async {
+    try {
+      final students = await ApiService.getStudents();
+      await StorageService.saveStudents(students);
+      return students;
+    } catch (e) {
       return _getLocalStudents();
     }
   }
 
-  List<Student> _getLocalStudents() {
-    final data = StorageService.getStudents();
-    return data.map((e) => Student.fromJson(e)).toList();
+  List<dynamic> _getLocalStudents() {
+    return StorageService.getStudents();
   }
 
   // Get Assessment Details
@@ -82,14 +75,16 @@ class AssessmentRepository {
   // Submit Evaluation
   // Returns true if synced online, false if saved locally
   Future<bool> submitEvaluation({
-    required int studentId,
+    required dynamic studentId,
     required int assessmentDetailId,
     required int obtainedMarks,
     String comments = '',
     String evaluation = '',
+    required String studentName,
   }) async {
     final payload = {
       'student_id': studentId,
+      'student_name': studentName,
       'assessment_detail_id': assessmentDetailId,
       'obtained_marks': obtainedMarks,
       'comments': comments,
@@ -100,6 +95,7 @@ class AssessmentRepository {
       try {
         await ApiService.submitEvaluation(
           studentId: studentId,
+          studentName: studentName,
           assessmentDetailId: assessmentDetailId,
           obtainedMarks: obtainedMarks,
           comments: comments,
