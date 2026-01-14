@@ -32,6 +32,7 @@ CREATE TABLE student_assessment_detail (
     obtained_marks INT,
     comments TEXT,
     evaluation VARCHAR(100),
+    submitted_by VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE,
     FOREIGN KEY (assessment_detail_id) REFERENCES assessment_details(id) ON DELETE CASCADE

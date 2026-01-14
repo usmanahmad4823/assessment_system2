@@ -54,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $comments = isset($data['comments']) ? $data['comments'] : '';
     $evaluation = isset($data['evaluation']) ? $data['evaluation'] : '';
     $student_name = isset($data['student_name']) ? $data['student_name'] : 'Unknown Student';
+    $submitted_by = isset($data['submitted_by']) ? $data['submitted_by'] : 'unknown';
 
     log_debug("Processing Student ID: $student_id (Name: $student_name), Detail ID: $assessment_detail_id");
 
@@ -95,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result_check->num_rows > 0) {
         // Update existing record
         log_debug("Updating existing evaluation.");
-        $sql = "UPDATE student_assessment_detail SET obtained_marks = ?, comments = ?, evaluation = ? WHERE student_id = ? AND assessment_detail_id = ?";
+        $sql = "UPDATE student_assessment_detail SET obtained_marks = ?, comments = ?, evaluation = ?, submitted_by = ? WHERE student_id = ? AND assessment_detail_id = ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             $response["message"] = "Prepare failed: " . $conn->error;
@@ -106,7 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Ensure comments and evaluation are always strings
         $comments = strval($comments);
         $evaluation = strval($evaluation);
-        $stmt->bind_param("issii", $obtained_marks, $comments, $evaluation, $student_id, $assessment_detail_id);
+        $submitted_by = strval($submitted_by);
+        $stmt->bind_param("isssii", $obtained_marks, $comments, $evaluation, $submitted_by, $student_id, $assessment_detail_id);
         $update_result = $stmt->execute();
         if ($update_result) {
             $response["success"] = true;
@@ -121,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Insert new record
         log_debug("Inserting new evaluation.");
-        $sql = "INSERT INTO student_assessment_detail (student_id, assessment_detail_id, obtained_marks, comments, evaluation) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO student_assessment_detail (student_id, assessment_detail_id, obtained_marks, comments, evaluation, submitted_by) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             $response["message"] = "Prepare failed: " . $conn->error;
@@ -132,8 +134,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Ensure comments and evaluation are always strings
         $comments = strval($comments);
         $evaluation = strval($evaluation);
-        // Correction: should be int, int, int, string, string
-        $stmt->bind_param("iiiss", $student_id, $assessment_detail_id, $obtained_marks, $comments, $evaluation);
+        $submitted_by = strval($submitted_by);
+        // Correction: should be int, int, int, string, string, string
+        $stmt->bind_param("iiisss", $student_id, $assessment_detail_id, $obtained_marks, $comments, $evaluation, $submitted_by);
         $insert_result = $stmt->execute();
         if ($insert_result) {
             $response["success"] = true;

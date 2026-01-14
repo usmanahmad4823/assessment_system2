@@ -81,6 +81,7 @@ class AssessmentRepository {
     String comments = '',
     String evaluation = '',
     required String studentName,
+    required String submittedBy,
   }) async {
     final payload = {
       'student_id': studentId,
@@ -89,6 +90,7 @@ class AssessmentRepository {
       'obtained_marks': obtainedMarks,
       'comments': comments,
       'evaluation': evaluation,
+      'submitted_by': submittedBy,
     };
 
     if (await isOnline) {
@@ -100,6 +102,7 @@ class AssessmentRepository {
           obtainedMarks: obtainedMarks,
           comments: comments,
           evaluation: evaluation,
+          submittedBy: submittedBy,
         );
         return true; 
       } catch (e) {

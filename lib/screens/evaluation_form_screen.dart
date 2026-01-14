@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import '../model/assessment_detail_model.dart';
 import '../repos/assessment_repository.dart';
-import '../services/sync_service.dart';
+import 'package:assessment_system2/services/sync_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EvaluationFormScreen extends StatefulWidget {
   final int assessmentId;
@@ -30,6 +31,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
   bool isLoading = true;
   bool isSubmitting = false;
   String? errorMessage;
+  String myId = '';
 
   @override
   void initState() {
@@ -39,6 +41,9 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
 
   Future<void> _loadData() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      myId = prefs.getString('user_numeric_id') ?? 'unknown';
+
       final studentsData = await _repository.getStudents();
       final detailsData = await _repository.getAssessmentDetails(widget.assessmentId);
 
@@ -140,6 +145,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
           obtainedMarks: obtainedMarks,
           comments: teacherComment,
           evaluation: evaluation,
+          submittedBy: myId,
         );
         
         if (!synced) {

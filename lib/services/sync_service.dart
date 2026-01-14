@@ -42,6 +42,7 @@ class SyncService {
           obtainedMarks: data['obtained_marks'],
           comments: data['comments'],
           evaluation: data['evaluation'],
+          submittedBy: data['submitted_by'] ?? 'unknown',
         );
 
         if (success) {

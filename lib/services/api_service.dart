@@ -93,6 +93,7 @@ class ApiService {
     String comments = '',
     String evaluation = '',
     required String studentName,
+    required String submittedBy,
   }) async {
     try {
       final response = await http.post(
@@ -105,6 +106,7 @@ class ApiService {
           'obtained_marks': obtainedMarks,
           'comments': comments,
           'evaluation': evaluation,
+          'submitted_by': submittedBy,
         }),
       );
 
