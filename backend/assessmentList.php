@@ -31,7 +31,7 @@ $response = [
 
 if ($action === 'get_all') {
     // Get all assessments
-    $sql = "SELECT id, assessment_title FROM assessment_table ORDER BY id DESC";
+    $sql = "SELECT id, assessment_title, password FROM assessment_table ORDER BY id DESC";
     $result = $conn->query($sql);
 
     if ($result === false) {
@@ -45,7 +45,8 @@ if ($action === 'get_all') {
         while ($row = $result->fetch_assoc()) {
             $response["data"][] = [
                 "id" => (int)$row["id"],
-                "assessment_title" => $row["assessment_title"]
+                "assessment_title" => $row["assessment_title"],
+                "password" => $row["password"]
             ];
         }
     }

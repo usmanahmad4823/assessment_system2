@@ -2,6 +2,7 @@
 CREATE TABLE assessment_table (
     id INT AUTO_INCREMENT PRIMARY KEY,
     assessment_title VARCHAR(255) NOT NULL,
+    password VARCHAR(255) DEFAULT '1234',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -39,10 +40,10 @@ CREATE TABLE student_assessment_detail (
 );
 
 -- Sample Data for Testing
-INSERT INTO assessment_table (assessment_title) VALUES 
-('English Assessment'),
-('Mathematics Assessment'),
-('Science Assessment');
+INSERT INTO assessment_table (assessment_title, password) VALUES 
+('English Assessment', 'english123'),
+('Mathematics Assessment', 'math123'),
+('Science Assessment', 'science123');
 
 INSERT INTO assessment_details (assessment_id, description, total_marks, is_comment) VALUES 
 (1, 'Grammar and Vocabulary', 50, 'yes'),

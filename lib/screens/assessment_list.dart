@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../model/assessment_model.dart';
 import '../repos/assessment_repository.dart';
 import 'evaluation_form_screen.dart';
-import 'login_screen.dart';
+// import 'login_screen.dart';
 import 'profile_screen.dart';
 
 class AssessmentList extends StatefulWidget {
@@ -35,6 +35,65 @@ class _AssessmentListState extends State<AssessmentList> {
     super.initState();
     _loadUserData();
     futureAssessments = _repository.getAssessments();
+  }
+
+  void _showPasswordDialog(BuildContext context, Assessment assessment) {
+    final TextEditingController passwordController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          title: const Text("Enter Password", style: TextStyle(color: Colors.white)),
+          content: TextField(
+            controller: passwordController,
+            obscureText: true,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: "Enter assessment password",
+              hintStyle: const TextStyle(color: Colors.white70),
+              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+              focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel", style: TextStyle(color: Colors.white70)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (passwordController.text == assessment.password) {
+                  Navigator.pop(context); // Close dialog
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EvaluationFormScreen(
+                        assessmentId: assessment.id,
+                        assessmentTitle: assessment.assessmentTitle,
+                      ),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Wrong password! Please try again."),
+                      backgroundColor: Color.fromARGB(255, 255, 82, 70),
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
+              child: const Text("Verify"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // ================= UI =================
@@ -143,15 +202,7 @@ class _AssessmentListState extends State<AssessmentList> {
                     // Start button
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EvaluationFormScreen(
-                              assessmentId: assessment.id,
-                              assessmentTitle: assessment.assessmentTitle,
-                            ),
-                          ),
-                        );
+                        _showPasswordDialog(context, assessment);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
