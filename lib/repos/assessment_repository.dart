@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:isolate';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../model/assessment_model.dart';
@@ -17,34 +18,63 @@ class AssessmentRepository {
 
   // Get Assessments
   Future<List<Assessment>> getAssessments() async {
+    final localData = await _getLocalAssessments();
+    
+    // If we have local data, return it immediately and update in background
+    if (localData.isNotEmpty) {
+      _fetchAndCacheAssessments(); // Background fetch
+      return localData;
+    }
+
+    // If no local data, wait for network
     if (await isOnline) {
-      try {
-        final assessments = await ApiService.getAssessments();
-        // Cache data
-        await StorageService.saveAssessments(assessments.map((e) => e.toJson()).toList());
-        return assessments;
-      } catch (e) {
-        // If API fails, try local
-        return _getLocalAssessments();
-      }
-    } else {
-      return _getLocalAssessments();
+      return await _fetchAndCacheAssessments();
+    }
+    
+    return [];
+  }
+
+  Future<List<Assessment>> _fetchAndCacheAssessments() async {
+    try {
+      final assessments = await ApiService.getAssessments();
+      final jsonList = await Isolate.run(() => assessments.map((e) => e.toJson()).toList());
+      await StorageService.saveAssessments(jsonList);
+      return assessments;
+    } catch (e) {
+      return [];
     }
   }
 
-  List<Assessment> _getLocalAssessments() {
+  Future<List<Assessment>> _getLocalAssessments() async {
     final data = StorageService.getAssessments();
-    return data.map((e) => Assessment.fromJson(e)).toList();
+    if (data.isEmpty) return [];
+    // Use isolate for mapping large lists
+    return await Isolate.run(() => data.map((e) => Assessment.fromJson(e)).toList());
   }
 
   // Get Students
   Future<List<dynamic>> getStudents() async {
+    final localStudents = _getLocalStudents();
+    
+    if (localStudents.isNotEmpty) {
+      _fetchAndCacheStudents(); // Background fetch
+      return localStudents;
+    }
+
+    if (await isOnline) {
+      return await _fetchAndCacheStudents();
+    }
+
+    return [];
+  }
+
+  Future<List<dynamic>> _fetchAndCacheStudents() async {
     try {
       final students = await ApiService.getStudents();
       await StorageService.saveStudents(students);
       return students;
     } catch (e) {
-      return _getLocalStudents();
+      return [];
     }
   }
 
@@ -54,22 +84,36 @@ class AssessmentRepository {
 
   // Get Assessment Details
   Future<List<AssessmentDetail>> getAssessmentDetails(int assessmentId) async {
+    final localDetails = await _getLocalAssessmentDetails(assessmentId);
+
+    if (localDetails.isNotEmpty) {
+      _fetchAndCacheAssessmentDetails(assessmentId); // Background fetch
+      return localDetails;
+    }
+
     if (await isOnline) {
-      try {
-        final details = await ApiService.getAssessmentDetails(assessmentId);
-        await StorageService.saveAssessmentDetails(assessmentId, details.map((e) => e.toJson()).toList());
-        return details;
-      } catch (e) {
-        return _getLocalAssessmentDetails(assessmentId);
-      }
-    } else {
-      return _getLocalAssessmentDetails(assessmentId);
+      return await _fetchAndCacheAssessmentDetails(assessmentId);
+    }
+
+    return [];
+  }
+
+  Future<List<AssessmentDetail>> _fetchAndCacheAssessmentDetails(int assessmentId) async {
+    try {
+      final details = await ApiService.getAssessmentDetails(assessmentId);
+      final jsonList = await Isolate.run(() => details.map((e) => e.toJson()).toList());
+      await StorageService.saveAssessmentDetails(assessmentId, jsonList);
+      return details;
+    } catch (e) {
+      return [];
     }
   }
 
-  List<AssessmentDetail> _getLocalAssessmentDetails(int assessmentId) {
+  Future<List<AssessmentDetail>> _getLocalAssessmentDetails(int assessmentId) async {
     final data = StorageService.getAssessmentDetails(assessmentId);
-    return data.map((e) => AssessmentDetail.fromJson(e)).toList();
+    if (data.isEmpty) return [];
+    // Use isolate for mapping large lists
+    return await Isolate.run(() => data.map((e) => AssessmentDetail.fromJson(e)).toList());
   }
 
   // Submit Evaluation

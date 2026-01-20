@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'dart:convert';
 import 'package:assessment_system2/screens/assessment_list.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController loginController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
+  bool _isPasswordVisible = false;
 
   @override
   void dispose() {
@@ -57,7 +59,6 @@ class _LoginScreenState extends State<LoginScreen> {
           await prefs.setString('cellno', userData['cellno'] ?? '');
           await prefs.setString('email', userData['email'] ?? '');
 
-          // Fetch and store the encrypted my_id just like the dashboard screen
           await _fetchEncryptedId(numericId);
         }
 
@@ -72,6 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(
             content: Text(jsonResponse['message'] ?? 'Invalid login'),
             backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
       }
@@ -82,6 +85,8 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(
           content: Text('Network error: $e'),
           backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
     }
@@ -106,102 +111,151 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0F2027),
-              Color(0xFF203A43),
-              Color(0xFF2C5364),
-            ],
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Background Aesthetic
+          Positioned(
+            top: -100,
+            right: -50,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF007AFF).withOpacity(0.15),
+              ),
+              child: BackdropFilter(
+                filter: ui.ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
           ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.lock_person_rounded,
-                  size: 80,
-                  color: Colors.white70,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Welcome Back',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Sign in to continue',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 48),
-                Card(
-                  elevation: 8,
-                  shadowColor: Colors.black45,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  color: const Color(0xFF1E1E1E).withOpacity(0.9), // Slightly different from background
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 32, horizontal: 24),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          TextFormField(
-                            controller: loginController,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: const InputDecoration(
-                              labelText: 'Email or Phone',
-                              prefixIcon: Icon(Icons.email_outlined),
-                            ),
-                            validator: (value) =>
-                                value!.isEmpty ? 'Please enter email or phone' : null,
+          Positioned(
+            bottom: -50,
+            left: -50,
+            child: Container(
+              width: 250,
+              height: 250,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF5856D6).withOpacity(0.1),
+              ),
+              child: BackdropFilter(
+                filter: ui.ImageFilter.blur(sigmaX: 60, sigmaY: 60),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+          ),
+          
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Assessment',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: -1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Sign in to your account',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white38,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: BackdropFilter(
+                      filter: ui.ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.04),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.08),
+                            width: 0.8,
                           ),
-                          const SizedBox(height: 20),
-                          TextFormField(
-                            controller: passwordController,
-                            obscureText: true,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: const InputDecoration(
-                              labelText: 'Password',
-                              prefixIcon: Icon(Icons.lock_outline),
-                            ),
-                            validator: (value) =>
-                                value!.isEmpty ? 'Please enter password' : null,
-                          ),
-                          const SizedBox(height: 32),
-                          ElevatedButton(
-                            onPressed: isLoading ? null : submitLogin,
-                            child: isLoading
-                                ? const SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                      strokeWidth: 2,
+                        ),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                controller: loginController,
+                                keyboardType: TextInputType.emailAddress,
+                                style: const TextStyle(color: Colors.white, fontSize: 16),
+                                decoration: const InputDecoration(
+                                  hintText: 'Email or Phone',
+                                  prefixIcon: Icon(Icons.mail_outline_rounded, size: 20),
+                                ),
+                                validator: (value) =>
+                                    value!.isEmpty ? 'Account ID is required' : null,
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                controller: passwordController,
+                                obscureText: !_isPasswordVisible,
+                                style: const TextStyle(color: Colors.white, fontSize: 16),
+                                decoration: InputDecoration(
+                                  hintText: 'Password',
+                                  prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _isPasswordVisible
+                                          ? Icons.visibility_off_outlined
+                                          : Icons.visibility_outlined,
+                                      size: 18,
                                     ),
-                                  )
-                                : const Text('LOGIN'),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isPasswordVisible = !_isPasswordVisible;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                validator: (value) =>
+                                    value!.isEmpty ? 'Password is required' : null,
+                              ),
+                              const SizedBox(height: 32),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: isLoading ? null : submitLogin,
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : const Text('Sign In'),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

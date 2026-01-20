@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:isolate';
 import '../model/assessment_model.dart';
 import '../model/assessment_detail_model.dart';
 import '../model/student_model.dart';
@@ -16,16 +17,17 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        
-        if (json['success'] == true) {
-          List<Assessment> assessments = (json['data'] as List)
-              .map((item) => Assessment.fromJson(item))
-              .toList();
-          return assessments;
-        } else {
-          throw Exception(json['message'] ?? 'Failed to load assessments');
-        }
+        // Use Isolate.run for parsing large JSON data
+        return await Isolate.run(() {
+          final json = jsonDecode(response.body);
+          if (json['success'] == true) {
+            return (json['data'] as List)
+                .map((item) => Assessment.fromJson(item))
+                .toList();
+          } else {
+            throw Exception(json['message'] ?? 'Failed to load assessments');
+          }
+        });
       } else {
         throw Exception('Server error: ${response.statusCode}');
       }
@@ -42,16 +44,17 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        
-        if (json['success'] == true) {
-          List<AssessmentDetail> details = (json['data'] as List)
-              .map((item) => AssessmentDetail.fromJson(item))
-              .toList();
-          return details;
-        } else {
-          throw Exception(json['message'] ?? 'Failed to load details');
-        }
+        // Use Isolate.run for parsing large JSON data
+        return await Isolate.run(() {
+          final json = jsonDecode(response.body);
+          if (json['success'] == true) {
+            return (json['data'] as List)
+                .map((item) => AssessmentDetail.fromJson(item))
+                .toList();
+          } else {
+            throw Exception(json['message'] ?? 'Failed to load details');
+          }
+        });
       } else {
         throw Exception('Server error: ${response.statusCode}');
       }
@@ -61,29 +64,29 @@ class ApiService {
   }
 
   // Get all students
-  // Get all students
   static Future<List<dynamic>> getStudents() async {
-  try {
-    final response = await http.get(
-      Uri.parse('https://bgnu.space/api/student_data'),
-    );
+    try {
+      final response = await http.get(
+        Uri.parse('https://bgnu.space/api/student_data'),
+      );
 
-    if (response.statusCode == 200) {
-      final decoded = jsonDecode(response.body);
-
-      // ✅ FIX: use "status" instead of "success"
-      if (decoded['status'] == true) {
-        return decoded['data'] as List<dynamic>;
+      if (response.statusCode == 200) {
+        // Use Isolate.run for parsing large JSON data
+        return await Isolate.run(() {
+          final decoded = jsonDecode(response.body);
+          if (decoded['status'] == true) {
+            return decoded['data'] as List<dynamic>;
+          } else {
+            throw Exception('API returned status false');
+          }
+        });
       } else {
-        throw Exception('API returned status false');
+        throw Exception('Server error: ${response.statusCode}');
       }
-    } else {
-      throw Exception('Server error: ${response.statusCode}');
+    } catch (e) {
+      throw Exception('Failed to load students: $e');
     }
-  } catch (e) {
-    throw Exception('Failed to load students: $e');
   }
-}
 
   // Submit evaluation
   static Future<bool> submitEvaluation({
