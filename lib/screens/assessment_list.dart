@@ -55,7 +55,7 @@ class _AssessmentListState extends State<AssessmentList> {
                 ),
                 title: const Text(
                   "Verification",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: -0.5),
                 ),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -63,7 +63,7 @@ class _AssessmentListState extends State<AssessmentList> {
                   children: [
                     const Text(
                       "Enter password to access this assessment.",
-                      style: TextStyle(fontSize: 14, color: Colors.white54, letterSpacing: -0.1),
+                      style: TextStyle(fontSize: 11, color: Colors.white54, letterSpacing: -0.1),
                     ),
                     const SizedBox(height: 24),
                     TextField(
@@ -168,7 +168,7 @@ class _AssessmentListState extends State<AssessmentList> {
                       const Text(
                         "Assessments",
                         style: TextStyle(
-                          fontSize: 28,
+                          fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
                           letterSpacing: -1.0,
@@ -192,7 +192,7 @@ class _AssessmentListState extends State<AssessmentList> {
                             backgroundColor: Colors.white.withOpacity(0.05),
                             child: Text(
                               fullName.isNotEmpty ? fullName[0].toUpperCase() : '?',
-                              style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                              style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -205,7 +205,7 @@ class _AssessmentListState extends State<AssessmentList> {
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
                     "Available tasks to complete",
-                    style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 13, letterSpacing: -0.1),
+                    style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 10, letterSpacing: -0.1),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -230,10 +230,10 @@ class _AssessmentListState extends State<AssessmentList> {
                               _searchQuery = value.toLowerCase();
                             });
                           },
-                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                          style: const TextStyle(color: Colors.white, fontSize: 12),
                           decoration: InputDecoration(
                             hintText: "Search assessments...",
-                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 15),
+                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 12),
                             prefixIcon: Icon(Icons.search_rounded, color: Colors.white.withOpacity(0.3), size: 20),
                             border: InputBorder.none,
                             enabledBorder: InputBorder.none,
@@ -296,7 +296,7 @@ class _AssessmentListState extends State<AssessmentList> {
                         return Center(
                           child: Text(
                             "No matches for '$_searchQuery'",
-                            style: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 14),
+                            style: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 11),
                           ),
                         );
                       }
@@ -343,7 +343,7 @@ class _AssessmentListState extends State<AssessmentList> {
                                                 Text(
                                                   assessment.assessmentTitle,
                                                   style: const TextStyle(
-                                                    fontSize: 17,
+                                                    fontSize: 13,
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.white,
                                                     letterSpacing: -0.4,
@@ -352,7 +352,7 @@ class _AssessmentListState extends State<AssessmentList> {
                                                 const SizedBox(height: 4),
                                                 Text(
                                                   "Begin evaluation",
-                                                  style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 13),
+                                                  style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10),
                                                 ),
                                               ],
                                             ),

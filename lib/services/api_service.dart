@@ -123,4 +123,29 @@ class ApiService {
       throw Exception('Error: $e');
     }
   }
+
+  // Get submitted evaluations by user
+  static Future<List<dynamic>> getSubmittedEvaluations(String submittedBy) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/getSubmittedEvaluations.php?submitted_by=$submittedBy'),
+      );
+
+      if (response.statusCode == 200) {
+        // Use Isolate.run for parsing large JSON data
+        return await Isolate.run(() {
+          final json = jsonDecode(response.body);
+          if (json['success'] == true) {
+            return json['data'] as List<dynamic>;
+          } else {
+            throw Exception(json['message'] ?? 'Failed to load submitted evaluations');
+          }
+        });
+      } else {
+        throw Exception('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
 }

@@ -157,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text(
                     'Assessment',
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 24,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                       letterSpacing: -1.2,
@@ -167,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text(
                     'Sign in to your account',
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 12,
                       color: Colors.white38,
                       letterSpacing: -0.2,
                     ),

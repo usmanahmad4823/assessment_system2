@@ -6,6 +6,7 @@ class StorageService {
   static const String studentsBoxName = 'students';
   static const String detailsBoxName = 'details';
   static const String evaluationQueueBoxName = 'evaluation_queue';
+  static const String submittedEvaluationsBoxName = 'submitted_evaluations';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -13,6 +14,7 @@ class StorageService {
     await Hive.openBox(studentsBoxName);
     await Hive.openBox(detailsBoxName);
     await Hive.openBox(evaluationQueueBoxName);
+    await Hive.openBox(submittedEvaluationsBoxName);
   }
 
   // Generic Get/Set helpers
@@ -20,6 +22,7 @@ class StorageService {
   static Box get _studentsBox => Hive.box(studentsBoxName);
   static Box get _detailsBox => Hive.box(detailsBoxName);
   static Box get _queueBox => Hive.box(evaluationQueueBoxName);
+  static Box get _submittedEvaluationsBox => Hive.box(submittedEvaluationsBoxName);
 
   // Save Assessments
   static Future<void> saveAssessments(List<dynamic> jsonList) async {
@@ -77,5 +80,16 @@ class StorageService {
 
   static Future<void> clearQueue() async {
     await _queueBox.clear();
+  }
+
+  // Save Submitted Evaluations
+  static Future<void> saveSubmittedEvaluations(String submittedBy, List<dynamic> jsonList) async {
+    await _submittedEvaluationsBox.put(submittedBy, jsonEncode(jsonList));
+  }
+
+  static List<dynamic> getSubmittedEvaluations(String submittedBy) {
+    final String? data = _submittedEvaluationsBox.get(submittedBy);
+    if (data == null) return [];
+    return jsonDecode(data);
   }
 }

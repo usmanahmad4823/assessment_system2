@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
+import 'submitted_assessments_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -101,19 +102,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Center(
                             child: Text(
                               fullName.isNotEmpty ? fullName[0].toUpperCase() : '?',
-                              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white70),
+                              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white70),
                             ),
                           ),
                         ),
                         const SizedBox(height: 20),
                         Text(
                           fullName,
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: -0.5),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           "ID: $userId",
-                          style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 14),
+                          style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11),
                         ),
                       ],
                     ),
@@ -125,7 +126,86 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                   _buildInfoTile(Icons.phone_iphone_rounded, "Phone", cellNo),
                   
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 32),
+                  
+                  // Submitted Assessments Button
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: BackdropFilter(
+                      filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF007AFF).withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFF007AFF).withOpacity(0.15), width: 0.8),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SubmittedAssessmentsScreen(),
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF007AFF).withOpacity(0.15),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Icon(
+                                      Icons.assignment_turned_in_outlined,
+                                      color: Color(0xFF007AFF),
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  const Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Submitted Assessments",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(height: 2),
+                                        Text(
+                                          "View your submission history",
+                                          style: TextStyle(
+                                            color: Colors.white38,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    color: Colors.white.withOpacity(0.3),
+                                    size: 16,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 32),
                   
                   // Logout Button
                   ClipRRect(

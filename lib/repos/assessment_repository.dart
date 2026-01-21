@@ -5,6 +5,7 @@ import '../services/storage_service.dart';
 import '../model/assessment_model.dart';
 import '../model/assessment_detail_model.dart';
 import '../model/student_model.dart';
+import '../model/submitted_evaluation_model.dart';
 
 class AssessmentRepository {
   
@@ -158,5 +159,41 @@ class AssessmentRepository {
       await StorageService.addToQueue(payload);
       return false;
     }
+  }
+
+  // Get Submitted Evaluations
+  Future<List<SubmittedEvaluation>> getSubmittedEvaluations(String submittedBy) async {
+    final localData = await _getLocalSubmittedEvaluations(submittedBy);
+    
+    // If we have local data, return it immediately and update in background
+    if (localData.isNotEmpty) {
+      _fetchAndCacheSubmittedEvaluations(submittedBy); // Background fetch
+      return localData;
+    }
+
+    // If no local data, wait for network
+    if (await isOnline) {
+      return await _fetchAndCacheSubmittedEvaluations(submittedBy);
+    }
+    
+    return [];
+  }
+
+  Future<List<SubmittedEvaluation>> _fetchAndCacheSubmittedEvaluations(String submittedBy) async {
+    try {
+      final evaluations = await ApiService.getSubmittedEvaluations(submittedBy);
+      await StorageService.saveSubmittedEvaluations(submittedBy, evaluations);
+      // Use isolate for mapping large lists
+      return await Isolate.run(() => evaluations.map((e) => SubmittedEvaluation.fromJson(e)).toList());
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<SubmittedEvaluation>> _getLocalSubmittedEvaluations(String submittedBy) async {
+    final data = StorageService.getSubmittedEvaluations(submittedBy);
+    if (data.isEmpty) return [];
+    // Use isolate for mapping large lists
+    return await Isolate.run(() => data.map((e) => SubmittedEvaluation.fromJson(e)).toList());
   }
 }

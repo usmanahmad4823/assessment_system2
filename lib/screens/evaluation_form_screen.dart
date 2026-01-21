@@ -369,7 +369,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                                               borderRadius: BorderRadius.circular(8),
                                             ),
                                             child: Text(
-                                              'Max: ${detail.totalMarks}',
+                                              'Max Marks: ${detail.totalMarks}',
                                               style: const TextStyle(
                                                 fontSize: 11,
                                                 color: Color(0xFF007AFF),
@@ -404,7 +404,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                                         style: const TextStyle(color: Colors.white, fontSize: 15),
                                         decoration: const InputDecoration(
                                           labelText: 'Feedback',
-                                          hintText: 'Enter findings...',
+                                          hintText: 'Enter comment...',
                                           prefixIcon: Icon(Icons.chat_bubble_outline_rounded, size: 18),
                                         ),
                                       ),
