@@ -49,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text("Profile"),
         backgroundColor: Colors.transparent,
@@ -91,30 +91,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 100,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white.withOpacity(0.1), width: 2),
+                            border: Border.all(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white.withOpacity(0.15)
+                                  : Colors.black.withOpacity(0.12),
+                              width: 2,
+                            ),
                             gradient: LinearGradient(
-                              colors: [
-                                Colors.white.withOpacity(0.05),
-                                Colors.white.withOpacity(0.02),
-                              ],
+                              colors: Theme.of(context).brightness == Brightness.dark
+                                  ? [
+                                      Colors.white.withOpacity(0.05),
+                                      Colors.white.withOpacity(0.02),
+                                    ]
+                                  : [
+                                      Colors.black.withOpacity(0.03),
+                                      Colors.black.withOpacity(0.01),
+                                    ],
                             ),
                           ),
                           child: Center(
                             child: Text(
                               fullName.isNotEmpty ? fullName[0].toUpperCase() : '?',
-                              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white70),
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).textTheme.headlineMedium?.color,
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 20),
                         Text(
                           fullName,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.5,
+                            color: Theme.of(context).textTheme.headlineMedium?.color,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           "ID: $userId",
-                          style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11),
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
@@ -168,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 20),
-                                  const Expanded(
+                                  Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -177,14 +199,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
-                                            color: Colors.white,
+                                            color: Theme.of(context).textTheme.titleMedium?.color,
                                           ),
                                         ),
-                                        SizedBox(height: 2),
+                                        const SizedBox(height: 2),
                                         Text(
                                           "View your submission history",
                                           style: TextStyle(
-                                            color: Colors.white38,
+                                            color: Theme.of(context).textTheme.bodyMedium?.color,
                                             fontSize: 12,
                                           ),
                                         ),
@@ -193,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   Icon(
                                     Icons.arrow_forward_ios_rounded,
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Theme.of(context).iconTheme.color,
                                     size: 16,
                                   ),
                                 ],
@@ -249,19 +271,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.04),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white.withOpacity(0.04)
+                : Colors.white,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.08), width: 0.8),
+            border: Border.all(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withOpacity(0.15)
+                  : Colors.black.withOpacity(0.12),
+              width: 1,
+            ),
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withOpacity(0.05)
+                      : Colors.black.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: Colors.white54, size: 20),
+                child: Icon(icon, color: Theme.of(context).iconTheme.color, size: 20),
               ),
               const SizedBox(width: 20),
               Column(
@@ -269,7 +300,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Text(
                     label,
-                    style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 12),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontSize: 12),
                   ),
                   const SizedBox(height: 2),
                   Text(

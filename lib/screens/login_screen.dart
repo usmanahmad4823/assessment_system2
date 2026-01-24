@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Background Aesthetic
@@ -154,21 +154,21 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'Assessment',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: Theme.of(context).textTheme.displaySmall?.color,
                       letterSpacing: -1.2,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Sign in to your account',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white38,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                       letterSpacing: -0.2,
                     ),
                   ),
@@ -181,10 +181,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.04),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withOpacity(0.04)
+                              : Colors.black.withOpacity(0.04),
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.08),
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white.withOpacity(0.08)
+                                : Colors.black.withOpacity(0.08),
                             width: 0.8,
                           ),
                         ),
@@ -195,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextFormField(
                                 controller: loginController,
                                 keyboardType: TextInputType.emailAddress,
-                                style: const TextStyle(color: Colors.white, fontSize: 16),
+                                style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16),
                                 decoration: const InputDecoration(
                                   hintText: 'Email or Phone',
                                   prefixIcon: Icon(Icons.mail_outline_rounded, size: 20),
@@ -207,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextFormField(
                                 controller: passwordController,
                                 obscureText: !_isPasswordVisible,
-                                style: const TextStyle(color: Colors.white, fontSize: 16),
+                                style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16),
                                 decoration: InputDecoration(
                                   hintText: 'Password',
                                   prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),

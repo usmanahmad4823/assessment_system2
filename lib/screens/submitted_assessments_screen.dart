@@ -102,17 +102,7 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF000000),
-              const Color(0xFF0A0A0A),
-              const Color(0xFF000000),
-            ],
-          ),
-        ),
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: SafeArea(
           child: Column(
             children: [
@@ -125,20 +115,24 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
                     filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white.withOpacity(0.05)
+                            : Colors.white,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                          width: 0.5,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withOpacity(0.15)
+                              : Colors.black.withOpacity(0.12),
+                          width: 1,
                         ),
                       ),
                       child: TextField(
                         onChanged: _filterEvaluations,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                         decoration: InputDecoration(
                           hintText: 'Search by student or assessment...',
-                          hintStyle: TextStyle(color: Colors.white38),
-                          prefixIcon: Icon(Icons.search, color: Colors.white38),
+                          hintStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                          prefixIcon: Icon(Icons.search, color: Theme.of(context).iconTheme.color),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         ),
@@ -187,13 +181,13 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
           Icon(
             Icons.assignment_outlined,
             size: 80,
-            color: Colors.white.withOpacity(0.2),
+            color: Theme.of(context).iconTheme.color?.withOpacity(0.3),
           ),
           const SizedBox(height: 16),
           Text(
             _searchQuery.isEmpty ? 'No Submissions Yet' : 'No Results Found',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
@@ -204,7 +198,7 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
                 ? 'Your submitted evaluations will appear here'
                 : 'Try a different search term',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.3),
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
               fontSize: 11,
             ),
           ),
@@ -233,11 +227,15 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
           filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withOpacity(0.05)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.white.withOpacity(0.08),
-                width: 0.5,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.15)
+                    : Colors.black.withOpacity(0.12),
+                width: 1,
               ),
             ),
             child: Padding(
@@ -248,8 +246,8 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
                   // Assessment Title
                   Text(
                     firstEval.assessmentTitle,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.titleLarge?.color,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.3,
@@ -293,7 +291,7 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
                       Text(
                         'ID: ${firstEval.studentId}',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 10,
                         ),
                       ),
@@ -323,10 +321,10 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
                               color: Color(0xFF007AFF),
                             ),
                             const SizedBox(width: 8),
-                            const Text(
+                            Text(
                               'Total Marks:',
                               style: TextStyle(
-                                color: Colors.white70,
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -360,10 +358,14 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.03),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withOpacity(0.03)
+                              : Colors.black.withOpacity(0.03),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.05),
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white.withOpacity(0.08)
+                                : Colors.black.withOpacity(0.08),
                             width: 0.5,
                           ),
                         ),
@@ -378,7 +380,7 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
                                   child: Text(
                                     evaluation.description,
                                     style: TextStyle(
-                                      color: Colors.white.withOpacity(0.9),
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                       height: 1.4,
@@ -391,7 +393,9 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.05),
+                                      color: Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.white.withOpacity(0.05)
+                                          : Colors.black.withOpacity(0.05),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
@@ -415,14 +419,14 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
                                   Icon(
                                     Icons.comment_outlined,
                                     size: 12,
-                                    color: Colors.white.withOpacity(0.4),
+                                    color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                                   ),
                                   const SizedBox(width: 6),
                                   Expanded(
                                     child: Text(
                                       evaluation.comments,
                                       style: TextStyle(
-                                        color: Colors.white.withOpacity(0.6),
+                                        color: Theme.of(context).textTheme.bodyMedium?.color,
                                         fontSize: 10,
                                         height: 1.4,
                                       ),
@@ -444,13 +448,13 @@ class _SubmittedAssessmentsScreenState extends State<SubmittedAssessmentsScreen>
                       Icon(
                         Icons.access_time,
                         size: 12,
-                        color: Colors.white.withOpacity(0.3),
+                        color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         _formatDate(firstEval.createdAt),
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.3),
+                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                           fontSize: 9,
                         ),
                       ),

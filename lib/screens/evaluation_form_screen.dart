@@ -193,12 +193,12 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(widget.assessmentTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.sync_rounded, size: 20, color: Colors.white70),
+            icon: Icon(Icons.sync_rounded, size: 20, color: Theme.of(context).iconTheme.color),
             onPressed: _handleReload,
           ),
           const SizedBox(width: 8),
@@ -227,7 +227,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
           isLoading
           ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
           : details.isEmpty
-              ? const Center(child: Text('No evaluation items found', style: TextStyle(color: Colors.white38)))
+              ? Center(child: Text('No evaluation items found', style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color)))
               : Form(
                   key: _formKey,
                   child: ListView(
@@ -240,7 +240,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white.withOpacity(0.3),
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
                             letterSpacing: 0.5,
                             textBaseline: TextBaseline.alphabetic,
                           ),
@@ -253,9 +253,16 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                           filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.04),
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white.withOpacity(0.04)
+                                  : Colors.white,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.white.withOpacity(0.08), width: 0.8),
+                              border: Border.all(
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white.withOpacity(0.15)
+                                    : Colors.black.withOpacity(0.12),
+                                width: 1,
+                              ),
                             ),
                             child: DropdownSearch<dynamic>(
                               items: students,
@@ -267,18 +274,31 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                               popupProps: PopupProps.menu(
                                 showSearchBox: true,
                                 menuProps: MenuProps(
-                                  backgroundColor: const Color(0xFF1C1C1E),
+                                  backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                      ? const Color(0xFF1C1C1E)
+                                      : Colors.white,
                                   borderRadius: BorderRadius.circular(16),
-                                  elevation: 0,
+                                  elevation: 8,
                                 ),
                                 searchFieldProps: TextFieldProps(
-                                  style: const TextStyle(color: Colors.white, fontSize: 14),
-                                  decoration: InputDecoration(
-                                    hintText: 'Search student...',
-                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
-                                    prefixIcon: Icon(Icons.search_rounded, size: 18, color: Colors.white.withOpacity(0.3)),
-                                    filled: true,
-                                    fillColor: Colors.white.withOpacity(0.03),
+                                style: TextStyle(
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                                  fontSize: 14,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: 'Search student...',
+                                  hintStyle: TextStyle(
+                                    color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5),
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.search_rounded,
+                                    size: 18,
+                                    color: Theme.of(context).iconTheme.color,
+                                  ),
+                                  filled: true,
+                                  fillColor: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white.withOpacity(0.03)
+                                      : Colors.black.withOpacity(0.03),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: BorderSide.none,
@@ -293,7 +313,9 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                                     child: Text(
                                       '${item['manual_id']} - $name',
                                       style: TextStyle(
-                                        color: isSelected ? const Color(0xFF007AFF) : Colors.white70,
+                                        color: isSelected
+                                            ? const Color(0xFF007AFF)
+                                            : Theme.of(context).textTheme.bodyLarge?.color,
                                         fontSize: 15,
                                         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                                       ),
@@ -322,7 +344,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white.withOpacity(0.3),
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -340,9 +362,16 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                               child: Container(
                                 padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.04),
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white.withOpacity(0.04)
+                                      : Colors.white,
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.white.withOpacity(0.08), width: 0.8),
+                                  border: Border.all(
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white.withOpacity(0.15)
+                                        : Colors.black.withOpacity(0.12),
+                                    width: 1,
+                                  ),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,10 +382,10 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                                         Expanded(
                                           child: Text(
                                             detail.description,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
-                                              color: Colors.white,
+                                              color: Theme.of(context).textTheme.titleMedium?.color,
                                               letterSpacing: -0.2,
                                             ),
                                           ),
@@ -384,7 +413,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                                       TextFormField(
                                         controller: marksControllers[detail.id],
                                         keyboardType: TextInputType.number,
-                                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                                        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16),
                                         decoration: InputDecoration(
                                           labelText: 'Marks',
                                           hintText: '0 - ${detail.totalMarks}',
@@ -401,7 +430,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                                     if (isCommentOnly)
                                       TextFormField(
                                         controller: commentControllers[detail.id],
-                                        style: const TextStyle(color: Colors.white, fontSize: 15),
+                                        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 15),
                                         decoration: const InputDecoration(
                                           labelText: 'Feedback',
                                           hintText: 'Enter comment...',

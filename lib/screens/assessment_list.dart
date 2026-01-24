@@ -48,10 +48,16 @@ class _AssessmentListState extends State<AssessmentList> {
             return BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: AlertDialog(
-                backgroundColor: Colors.white.withOpacity(0.08),
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.08)
+                    : Colors.black.withOpacity(0.08),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
-                  side: BorderSide(color: Colors.white.withOpacity(0.12), width: 0.8),
+                  side: BorderSide(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white.withOpacity(0.12)
+                        : Colors.black.withOpacity(0.12),
+                    width: 0.8),
                 ),
                 title: const Text(
                   "Verification",
@@ -61,15 +67,15 @@ class _AssessmentListState extends State<AssessmentList> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Enter password to access this assessment.",
-                      style: TextStyle(fontSize: 11, color: Colors.white54, letterSpacing: -0.1),
+                      style: TextStyle(fontSize: 11, color: Theme.of(context).textTheme.bodyMedium?.color, letterSpacing: -0.1),
                     ),
                     const SizedBox(height: 24),
                     TextField(
                       controller: passwordController,
                       obscureText: !isVisible,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                       decoration: InputDecoration(
                         hintText: "Password",
                         prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
@@ -91,7 +97,7 @@ class _AssessmentListState extends State<AssessmentList> {
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel", style: TextStyle(color: Colors.white38)),
+                    child: Text("Cancel", style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color)),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -134,7 +140,7 @@ class _AssessmentListState extends State<AssessmentList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Background Aesthetic
@@ -165,12 +171,12 @@ class _AssessmentListState extends State<AssessmentList> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         "Assessments",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: Theme.of(context).textTheme.displaySmall?.color,
                           letterSpacing: -1.0,
                         ),
                       ),
@@ -184,15 +190,24 @@ class _AssessmentListState extends State<AssessmentList> {
                         icon: Container(
                           padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white.withOpacity(0.12), width: 1.5),
+                            border: Border.all(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white.withOpacity(0.12)
+                                  : Colors.black.withOpacity(0.12),
+                              width: 1.5),
                             shape: BoxShape.circle,
                           ),
                           child: CircleAvatar(
                             radius: 14,
-                            backgroundColor: Colors.white.withOpacity(0.05),
+                            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white.withOpacity(0.05)
+                                : Colors.black.withOpacity(0.05),
                             child: Text(
                               fullName.isNotEmpty ? fullName[0].toUpperCase() : '?',
-                              style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -205,7 +220,7 @@ class _AssessmentListState extends State<AssessmentList> {
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
                     "Available tasks to complete",
-                    style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 10, letterSpacing: -0.1),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6), fontSize: 10, letterSpacing: -0.1),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -219,9 +234,15 @@ class _AssessmentListState extends State<AssessmentList> {
                       filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withOpacity(0.05)
+                              : Colors.black.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.white.withOpacity(0.08), width: 0.8),
+                          border: Border.all(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white.withOpacity(0.08)
+                                : Colors.black.withOpacity(0.08),
+                            width: 0.8),
                         ),
                         child: TextField(
                           controller: _searchController,
@@ -230,11 +251,16 @@ class _AssessmentListState extends State<AssessmentList> {
                               _searchQuery = value.toLowerCase();
                             });
                           },
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 12),
                           decoration: InputDecoration(
                             hintText: "Search assessments...",
-                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 12),
-                            prefixIcon: Icon(Icons.search_rounded, color: Colors.white.withOpacity(0.3), size: 20),
+                            hintStyle: TextStyle(
+                              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.4),
+                              fontSize: 12),
+                            prefixIcon: Icon(
+                              Icons.search_rounded,
+                              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5),
+                              size: 20),
                             border: InputBorder.none,
                             enabledBorder: InputBorder.none,
                             focusedBorder: InputBorder.none,
@@ -262,11 +288,11 @@ class _AssessmentListState extends State<AssessmentList> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.info_outline_rounded, color: Colors.white.withOpacity(0.2), size: 40),
+                                Icon(Icons.info_outline_rounded, color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3), size: 40),
                                 const SizedBox(height: 16),
                                 Text(
                                   "Something went wrong",
-                                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontWeight: FontWeight.w600),
+                                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontWeight: FontWeight.w600),
                                 ),
                                 const SizedBox(height: 24),
                                 TextButton(
@@ -282,8 +308,8 @@ class _AssessmentListState extends State<AssessmentList> {
                       }
 
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(
-                          child: Text("No assessments found", style: TextStyle(color: Colors.white24)),
+                        return Center(
+                          child: Text("No assessments found", style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3))),
                         );
                       }
 
@@ -296,7 +322,7 @@ class _AssessmentListState extends State<AssessmentList> {
                         return Center(
                           child: Text(
                             "No matches for '$_searchQuery'",
-                            style: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 11),
+                            style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3), fontSize: 11),
                           ),
                         );
                       }
@@ -314,10 +340,14 @@ class _AssessmentListState extends State<AssessmentList> {
                                 filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.04),
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white.withOpacity(0.04)
+                                        : Colors.black.withOpacity(0.04),
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                      color: Colors.white.withOpacity(0.08),
+                                      color: Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.white.withOpacity(0.08)
+                                          : Colors.black.withOpacity(0.08),
                                       width: 0.8,
                                     ),
                                   ),
@@ -342,22 +372,22 @@ class _AssessmentListState extends State<AssessmentList> {
                                               children: [
                                                 Text(
                                                   assessment.assessmentTitle,
-                                                  style: const TextStyle(
+                                                  style: TextStyle(
                                                     fontSize: 13,
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.white,
+                                                    color: Theme.of(context).textTheme.titleLarge?.color,
                                                     letterSpacing: -0.4,
                                                   ),
                                                 ),
                                                 const SizedBox(height: 4),
                                                 Text(
                                                   "Begin evaluation",
-                                                  style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10),
+                                                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontSize: 10),
                                                 ),
                                               ],
                                             ),
                                           ),
-                                          Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.15)),
+                                          Icon(Icons.chevron_right_rounded, color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3)),
                                         ],
                                       ),
                                     ),
