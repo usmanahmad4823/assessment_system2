@@ -49,7 +49,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
       final detailsData = await _repository.getAssessmentDetails(widget.assessmentId);
 
       for (var i = 0; i < studentsData.length; i++) {
-        studentsData[i]['manual_id'] = i + 1;
+        studentsData[i]['manual_id'] = i + 8;
         if (studentsData[i]['user_full_name'] == null) {
            studentsData[i]['user_full_name'] = studentsData[i]['name'];
         }

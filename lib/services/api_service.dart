@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:isolate';
 import '../model/assessment_model.dart';
 import '../model/assessment_detail_model.dart';
 import '../model/student_model.dart';
+import '../model/received_evaluation_model.dart';
 
 class ApiService {
   // Change this to your backend URL
@@ -139,6 +141,33 @@ class ApiService {
             return json['data'] as List<dynamic>;
           } else {
             throw Exception(json['message'] ?? 'Failed to load submitted evaluations');
+          }
+        });
+      } else {
+        throw Exception('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  // Get received evaluations for a student
+  static Future<List<ReceivedEvaluation>> getReceivedEvaluations(String studentId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/getReceivedEvaluations.php?student_id=$studentId'),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('Received Evaluations Response: ${response.body}');
+        return await Isolate.run(() {
+          final json = jsonDecode(response.body);
+          if (json['success'] == true) {
+            return (json['data'] as List)
+                .map((item) => ReceivedEvaluation.fromJson(item))
+                .toList();
+          } else {
+            throw Exception(json['message'] ?? 'Failed to load received evaluations');
           }
         });
       } else {

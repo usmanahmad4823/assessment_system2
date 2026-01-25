@@ -82,7 +82,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_s_insert->close();
         log_debug("Student created successfully.");
     } else {
-        log_debug("Student $student_id already exists.");
+        log_debug("Student $student_id already exists. Updating name...");
+        // Update the student name to ensure it's current (fixes "Unknown" issue if ID previously existed with bad data)
+        $update_s_sql = "UPDATE student SET name = ? WHERE id = ?";
+        if ($stmt_s_update = $conn->prepare($update_s_sql)) {
+            $stmt_s_update->bind_param("si", $student_name, $student_id);
+            $stmt_s_update->execute();
+            $stmt_s_update->close();
+        }
     }
     $stmt_s_check->close();
 
