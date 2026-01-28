@@ -177,9 +177,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
-        if (!savedLocally) {
-          Navigator.pop(context);
-        }
+
       }
     } catch (e) {
       setState(() => errorMessage = 'Submission failed: $e');
