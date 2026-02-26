@@ -62,22 +62,6 @@ Professionalism: A modern, high-end look that meets current industry standards f
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Developed as a semester(5th) project
 Developed BY: USMAN AHMAD
 BSCSF23E07
